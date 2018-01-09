@@ -89,3 +89,7 @@ Register babel for extra files.
 ## LICENSE
 
 MIT
+
+## CHANGELOG
+
+* 修改html配置可以支持数组（多页面输入和输出，具体参考html-webpack-plugin）
