@@ -21,7 +21,7 @@ import stringifyObject from './stringifyObject';
 import normalizeTheme from './normalizeTheme';
 import { applyWebpackConfig } from './applyWebpackConfig';
 import readRc from './readRc';
-import { stripLastSlash } from './utils';
+import {runArray, stripLastSlash} from './utils';
 
 const debug = require('debug')('af-webpack:getConfig');
 
@@ -256,6 +256,17 @@ export default function getConfig(opts = {}) {
     }
   }
 
+  function createHtmlWebpackPlugins(html) {
+    const res = runArray(html, function (d) {
+      return new HTMLWebpackPlugin(d);
+    })
+    if (res && Array.isArray(res)) {
+      return res;
+    } else {
+      return [res]
+    }
+  }
+
   const config = {
     bail: !isDev,
     devtool: opts.devtool || undefined,
@@ -455,7 +466,7 @@ export default function getConfig(opts = {}) {
             }),
           ]
         : []),
-      ...(opts.html ? [new HTMLWebpackPlugin(opts.html)] : []),
+      ...(opts.html ? createHtmlWebpackPlugins(opts.html) : []),
       new CaseSensitivePathsPlugin(),
       new webpack.LoaderOptionsPlugin({
         options: {
