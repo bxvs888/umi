@@ -3,10 +3,10 @@ import isPlainObject from 'is-plain-object';
 
 export default function() {
   return {
-    name: 'html',
+    name: 'doneCallback',
     validate(val) {
       assert(
-        Array.isArray(val) || isPlainObject(val),
+        typeof val == 'function',
         `The html config must be Plain Object, but got ${val}`,
       );
     },

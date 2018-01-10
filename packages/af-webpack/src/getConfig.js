@@ -275,9 +275,9 @@ export default function getConfig(opts = {}) {
       path: outputPath,
       // Add /* filename */ comments to generated require()s in the output.
       pathinfo: isDev,
-      filename: `[name]${jsHash}.js`,
+      filename: (opts.assetsPath && opts.assetsPath.js ? opts.assetsPath.js : 'assets/js/') + `[name]${jsHash}.js`,
       publicPath: opts.publicPath || undefined,
-      chunkFilename: `[name]${jsHash}.async.js`,
+      chunkFilename: (opts.assetsPath && opts.assetsPath.js ? opts.assetsPath.js : 'assets/js/') + `[name]${jsHash}.async.js`,
     },
     resolve: {
       modules: [
@@ -349,7 +349,7 @@ export default function getConfig(opts = {}) {
           loader: require.resolve('url-loader'),
           options: {
             limit: 10000,
-            name: 'static/[name].[hash:8].[ext]',
+            name: (opts.assetsPath && opts.assetsPath.media ? opts.assetsPath.media : 'assets/media/') + '[name].[hash:8].[ext]',
           },
         },
         {
@@ -422,7 +422,7 @@ export default function getConfig(opts = {}) {
             new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.optimize.ModuleConcatenationPlugin(),
             new ExtractTextPlugin({
-              filename: `[name]${cssHash}.css`,
+              filename: (opts.assetsPath && opts.assetsPath.css ? opts.assetsPath.css : 'assets/css/')  + `[name]${cssHash}.css`,
               allChunks: true,
             }),
             ...(opts.manifest

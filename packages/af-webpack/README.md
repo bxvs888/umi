@@ -92,4 +92,70 @@ MIT
 
 ## CHANGELOG
 
-* 修改html配置可以支持数组（多页面输入和输出，具体参考html-webpack-plugin）
+1. 修改html配置可以支持数组（多页面输入和输出，具体参考html-webpack-plugin）
+```js
+{
+"html": [
+    {
+    inject: false,
+    template: require('html-webpack-template'),
+    appMountId: "root",
+    scripts: [
+      "http://res.wx.qq.com/open/js/jweixin-1.2.0.js"
+    ],
+    lang: "zh-CN",
+    mobile: true,
+    title: 'title',
+    hash: false,
+    links: [
+      {
+        href: IMG_BASE + 'assets/favicon.ico',
+        rel: 'shortcut icon'
+      }
+    ],
+    filename: DEBUG ? 'index.html' : "index.ftl",
+    bodyHtmlSnippet: '',
+    "window": windowVars,
+    chunks: ['index', 'common'],
+    minify: {
+      collapseWhitespace: true,
+      conservativeCollapse: true,
+      preserveLineBreaks: true,
+      removeComments: true
+      // more options:
+      // https://github.com/kangax/html-minifier#options-quick-reference
+    },
+    {
+      inject: true,
+      template: 'src/demo.ejs',
+      hash: false,
+      favicon: 'public/favicon.ico',
+      filename: 'demo.html',
+      chunks: ['demo', 'common'],
+    }
+  ]
+}
+```
+1. doneCallback 参数
+ 
+    用于编译完成后的文件复制等操作
+    
+1. assetsPath 参数
+ 
+    配置各类型文件目录结构，用于归类
+    资源输出路径，默认：
+    图片资源：assets/img
+    css文件：assets/css
+    js文件：assets/js
+    其他文件: assets/media
+    
+  ```js
+  {
+    "assetsPath": {
+        "media": 'assets/media/',
+        "js": 'assets/js/',
+        "css": 'assets/css/',
+        "img": 'assets/images/',
+      },
+  }
+  ```
