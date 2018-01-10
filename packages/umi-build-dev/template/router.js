@@ -1,4 +1,4 @@
-import { Router, Route, Switch } from 'umi-router';
+import { Router, Route, Switch } from 'react-router-dom';
 import dynamic from '<%= libraryName %>/dynamic';
 import { default as event, Events } from '<%= libraryName %>/event';
 
