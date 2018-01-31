@@ -1,8 +1,5 @@
-import {
-  createCompiler,
-  prepareUrls,
-} from 'react-dev-utils/WebpackDevServerUtils';
-import clearConsole from 'react-dev-utils/clearConsole';
+import { createCompiler, prepareUrls } from './WebpackDevServerUtils';
+import clearConsole from './clearConsole';
 import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -13,7 +10,7 @@ import choosePort from './choosePort';
 
 const isInteractive = process.stdout.isTTY;
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 8000;
-const HOST = '0.0.0.0';
+const HOST = process.env.HOST || '0.0.0.0';
 const PROTOCOL = 'http';
 const noop = () => {};
 
@@ -64,6 +61,9 @@ export default function dev({
         clientLogLevel: 'none',
         hot: true,
         quiet: true,
+        headers: {
+          'access-control-allow-origin': '*',
+        },
         publicPath: webpackConfig.output.publicPath,
         watchOptions: {
           ignored: /node_modules/,

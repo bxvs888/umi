@@ -11,7 +11,7 @@ import { setConfig } from '../createRouteMiddleware';
 
 const pluginsMap = requireindex(join(__dirname, './configPlugins'));
 const plugins = Object.keys(pluginsMap).map(key => {
-  return pluginsMap[key]();
+  return pluginsMap[key].default();
 });
 let devServer = null;
 
@@ -101,12 +101,42 @@ export function getConfig(cwd, opts = {}) {
       throw new Error(msg);
     }
 
+    if (config.default) {
+      config = config.default;
+    }
+
     // 把外层 context 的内容复制进来，用内层的覆盖它
     if (config.context && config.pages) {
       Object.keys(config.pages).forEach(key => {
         const page = config.pages[key];
         page.context = { ...config.context, ...page.context };
       });
+    }
+
+    // pages 配置补丁
+    // /index -> /index.html
+    // index -> /index.html
+    if (config.pages) {
+      const htmlSuffix = !!(
+        config.exportStatic &&
+        typeof config.exportStatic === 'object' &&
+        config.exportStatic.htmlSuffix
+      );
+      config.pages = Object.keys(config.pages).reduce((memo, key) => {
+        let newKey = key;
+        // Remove it if no break
+        // if (newKey === '/') {
+        //   newKey = '/index.html';
+        // }
+        if (htmlSuffix && newKey.slice(-5) !== '.html') {
+          newKey = `${newKey}.html`;
+        }
+        if (newKey.charAt(0) !== '/') {
+          newKey = `/${newKey}`;
+        }
+        memo[newKey] = config.pages[key];
+        return memo;
+      }, {});
     }
 
     // 校验
@@ -148,9 +178,7 @@ export function getConfig(cwd, opts = {}) {
         )}" 中的一项，详见 https://fengdie.alipay-eco.com/doc/h5app/configuration`;
         const guess = didyoumean(key, pluginNames);
         const midMsg = guess ? `你是不是想配置 "${guess}" ？ 或者` : '请';
-        const msg = `"${relativeFile}" 中配置的 "${key}" 并非约定的配置项，${
-          midMsg
-        }${affixmsg}`;
+        const msg = `"${relativeFile}" 中配置的 "${key}" 并非约定的配置项，${midMsg}${affixmsg}`;
         printError(msg);
         throw new Error(msg);
       }

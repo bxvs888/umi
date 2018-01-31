@@ -20,7 +20,7 @@
 var stripAnsi = require('strip-ansi');
 var url = require('url');
 var launchEditorEndpoint = require('react-dev-utils/launchEditorEndpoint');
-var formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
+var formatWebpackMessages = require('./formatWebpackMessages');
 var ErrorOverlay = require('react-error-overlay');
 var socket = require('./socket');
 var stripLastSlash = require('./utils').stripLastSlash;
@@ -230,7 +230,7 @@ function canApplyUpdates() {
 
 // Attempt to update code on the fly, fall back to a hard reload.
 function tryApplyUpdates(onHotUpdateSuccess) {
-  if (!module.hot) {
+  if (process.env.HMR === 'reload' || !module.hot) {
     // HotModuleReplacementPlugin is not in Webpack configuration.
     window.location.reload();
     return;

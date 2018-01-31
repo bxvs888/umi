@@ -18,6 +18,7 @@ export default function(context, opts = {}) {
           libraryDirectory: 'es',
           style: true,
         },
+        'antd',
       ],
       [
         require.resolve('babel-plugin-import'),
@@ -26,20 +27,19 @@ export default function(context, opts = {}) {
           libraryDirectory: 'es',
           style: true,
         },
+        'antd-mobile',
       ],
       [
         require.resolve('babel-plugin-module-resolver'),
         {
           alias: {
             fastclick: require.resolve('fastclick'),
-            'react-router-dom': require.resolve('react-router-dom'),
-            'history/createBrowserHistory': require.resolve(
-              'history/createBrowserHistory',
-            ),
             [`${libraryName}/dynamic`]: require.resolve('./dynamic'),
             [`${libraryName}/link`]: require.resolve('./link'),
             [`${libraryName}/router`]: require.resolve('./router'),
-            [`${libraryName}/event`]: require.resolve('./event'),
+            [`${libraryName}/_createHistory`]: require.resolve(
+              './createHistory',
+            ),
           },
         },
       ],

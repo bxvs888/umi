@@ -1,22 +1,20 @@
 {
   "name": "umi",
-  "version": "1.0.0-beta.33",
+  "version": "1.0.0-rc.1",
   "description": "A neat framework for building highly performance and cross-platform optimized web apps.",
   "dependencies": {
-    "@babel/runtime": "7.0.0-beta.31",
+    "@babel/runtime": "^7.0.0-beta.31",
     "@types/react": "^16.0.27",
     "babel-plugin-import": "^1.6.2",
     "babel-plugin-module-resolver": "^3.0.0-beta.5",
-    "babel-preset-umi": "^0.2.2",
+    "babel-preset-umi": "^0.2.4",
     "chai": "^4.1.2",
     "cross-spawn": "^5.1.0",
     "ejs": "^2.5.7",
     "fastclick": "^1.0.6",
-    "history": "^4.7.2",
     "query-string": "^5.0.0",
-    "react-router-dom": "^4.2.2",
-    "umi-build-dev": "^0.5.22",
-    "umi-test": "^0.2.3",
+    "umi-build-dev": "^0.9.0",
+    "umi-test": "^0.3.2",
     "update-notifier": "^2.3.0",
     "uppercamelcase": "^3.0.0",
     "url": "^0.11.0",
@@ -39,7 +37,7 @@
   "scripts": {
     "build": "ruban build",
     "test": "ruban test --timeout 200000",
-    "debug": "ruban debug --timeout 200000",
+    "debug": "DISABLE_TRANSFORM_RUNTIME=1 ruban debug --timeout 200000",
     "coveralls": "ruban coveralls"
   },
   "files": [

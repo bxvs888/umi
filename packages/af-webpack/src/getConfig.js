@@ -4,11 +4,13 @@ import SystemBellWebpackPlugin from 'system-bell-webpack-plugin';
 import WatchMissingNodeModulesPlugin from 'react-dev-utils/WatchMissingNodeModulesPlugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import ManifestPlugin from 'webpack-manifest-plugin';
+import SWPrecacheWebpackPlugin from 'sw-precache-webpack-plugin';
 import autoprefixer from 'autoprefixer';
 import { dirname, resolve, join } from 'path';
 import { existsSync } from 'fs';
 import eslintFormatter from 'react-dev-utils/eslintFormatter';
 import assert from 'assert';
+import deprecate from 'deprecate';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import HTMLWebpackPlugin from 'html-webpack-plugin';
@@ -24,6 +26,16 @@ import readRc from './readRc';
 import {runArray, stripLastSlash} from './utils';
 
 const debug = require('debug')('af-webpack:getConfig');
+
+if (process.env.DISABLE_TSLINT) {
+  deprecate('DISABLE_TSLINT is deprecated, use TSLINT=none instead');
+}
+if (process.env.DISABLE_ESLINT) {
+  deprecate('DISABLE_ESLINT is deprecated, use ESLINT=none instead');
+}
+if (process.env.NO_COMPRESS) {
+  deprecate('NO_COMPRESS is deprecated, use COMPRESS=none instead');
+}
 
 export default function getConfig(opts = {}) {
   assert(opts.cwd, 'opts.cwd must be specified');
@@ -57,7 +69,11 @@ export default function getConfig(opts = {}) {
     ...(isDev
       ? {}
       : {
-          minimize: !process.env.NO_COMPRESS,
+          minimize: !(
+            process.env.CSS_COMPRESS === 'none' ||
+            process.env.COMPRESS === 'none' ||
+            process.env.NO_COMPRESS
+          ),
           sourceMap: !opts.disableCSSSourceMap,
         }),
   };
@@ -192,7 +208,7 @@ export default function getConfig(opts = {}) {
     ...(opts.babel || babelConfig),
     // 性能提升有限，但会带来一系列答疑的工作量，所以不开放
     cacheDirectory: false,
-    babelrc: process.env.ENABLE_BABELRC ? true : false,
+    babelrc: !!process.env.BABELRC,
   };
   babelOptions.plugins = [
     ...(babelOptions.plugins || []),
@@ -304,7 +320,7 @@ export default function getConfig(opts = {}) {
     },
     module: {
       rules: [
-        ...(process.env.DISABLE_TSLINT
+        ...(process.env.DISABLE_TSLINT || process.env.TSLINT === 'none'
           ? []
           : [
               {
@@ -323,7 +339,7 @@ export default function getConfig(opts = {}) {
                 ],
               },
             ]),
-        ...(process.env.DISABLE_ESLINT
+        ...(process.env.DISABLE_ESLINT || process.env.ESLINT === 'none'
           ? []
           : [
               {
@@ -425,6 +441,21 @@ export default function getConfig(opts = {}) {
               filename: (opts.assetsPath && opts.assetsPath.css ? opts.assetsPath.css : 'assets/css/')  + `[name]${cssHash}.css`,
               allChunks: true,
             }),
+            ...(opts.serviceworker
+              ? [
+                  new SWPrecacheWebpackPlugin({
+                    filename: 'service-worker.js',
+                    minify: !(
+                      process.env.NO_COMPRESS || process.env.COMPRESS === 'none'
+                    ),
+                    staticFileGlobsIgnorePatterns: [
+                      /\.map$/,
+                      /asset-manifest\.json$/,
+                    ],
+                    ...opts.serviceworker,
+                  }),
+                ]
+              : []),
             ...(opts.manifest
               ? [
                   new ManifestPlugin({
@@ -434,7 +465,7 @@ export default function getConfig(opts = {}) {
                 ]
               : []),
           ]),
-      ...(isDev || process.env.NO_COMPRESS
+      ...(isDev || (process.env.NO_COMPRESS || process.env.COMPRESS === 'none')
         ? []
         : [
             new webpack.optimize.UglifyJsPlugin({
@@ -447,6 +478,7 @@ export default function getConfig(opts = {}) {
           // eslint-disable-line
           isDev ? 'development' : 'production',
         ), // eslint-disable-line
+        'process.env.HMR': process.env.HMR,
         // 给 socket server 用
         ...(process.env.SOCKET_SERVER
           ? {

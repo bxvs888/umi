@@ -1,0 +1,31 @@
+{
+  "docs": {
+    "Introduction": [
+      "introduction",
+      "getting-started",
+      "app-structure",
+      "navigate-between-pages",
+      "layout",
+      "write-css",
+      "using-antd-or-antd-mobile",
+      "theme"
+    ],
+    "Guides": [
+      "router",
+      "load-on-demand",
+      "pwa",
+      "test",
+      "deploy",
+      "faq"
+    ],
+    "API Reference": [
+      "api",
+      "config-umi",
+      "config-webpack",
+      "env-variables"
+    ]
+  },
+  "docs-other": {
+    "First Category": []
+  }
+}

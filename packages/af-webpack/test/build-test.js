@@ -7,7 +7,7 @@ import getUserConfig from '../src/getUserConfig';
 import getConfig from '../src/getConfig';
 
 process.env.NODE_ENV = 'production';
-process.env.NO_COMPRESS = 1;
+process.env.COMPRESS = 'none';
 
 function getEntry(cwd) {
   if (existsSync(join(cwd, 'index.ts'))) {
@@ -71,8 +71,12 @@ describe('build', () => {
             disableCSSModules: true,
           },
           () => {
-            assertBuildResult(cwd);
-            done();
+            try {
+              assertBuildResult(cwd);
+              done();
+            } catch (e) {
+              done(e);
+            }
           },
         );
       });
